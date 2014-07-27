@@ -7,8 +7,9 @@
 
         <!--Thêm hiển thị map-->
         <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+        <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>  
         <script>
-
+            
             function smallMap() {
                 var lat = "<?php echo $place['Place']['latitude']; ?>";
                 var lng = "<?php echo $place['Place']['longitude']; ?>";
@@ -40,7 +41,6 @@
     <!-- Custom style -->
     <?php echo $this->Html->css("css-index"); ?>
     <?php echo $this->Html->css("style_loading"); ?>
-    <?php echo $this->Html->css("map_css"); ?>
     
     <!--Chèn thư viên jQuery-->
     <?php echo $this->Html->script('jquery-2.1.1.min'); ?>
@@ -96,9 +96,9 @@
                         <option>Tìm quán</option>
                         <option>Đồ uống</option>				
                     </select>
-                    <input type="text" class="form-control col-lg-8"
-                           placeholder="Từ khóa">
-                    <input type="text" class="form-control col-lg-8"
+                    <input id="name_text" type="text" class="form-control col-lg-8"
+                           placeholder="Tên quán">
+                    <input id="dis_text" type="text" class="form-control col-lg-8"  autocomplete="off"
                            placeholder="Khu vực">
                     <button id="search" type="button" class="btn btn-primary">Search</button>
                 </form>	

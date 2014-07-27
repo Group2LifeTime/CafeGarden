@@ -12,15 +12,15 @@ function handlerDataReceiv(data) {
             var row = '<div class="row">' +
                     '<div class="col-xs-6 col-md-3">' +
                     '<a href="/CafeGarden/places/place/' + place[x][y].id + '" class="thumbnail">' +
-                    '<img src="/CafeGarden/img/' + place[x][y].image + '"/>' +
+                    '<img src="/CafeGarden/img/front/' + place[x][y].image + '"/>' +
                     '</a>' +
                     '</div>' +
                     '<div class="details col-md-7">' +
                     '<a href="/CafeGarden/places/place/' + place[x][y].id + '"><h3>' + place[x][y].name + '</h3></a>' +
                     '<p class="address">' + address + '</p>' +
                     '<p class="decription">' +
-                    place[x][y].intro +
-                    '</p>' +
+                    (place[x][y].intro).trim().substring(0, 300) +
+                    '...</p>' +
                     '</div>' +
                     '<div class="rating col-md-2">' +
                     '<span class="point">' + place[x][y].vote + '.0</span>' +
@@ -38,22 +38,36 @@ function handlerDataReceiv(data) {
 }
 
 $(function() {
+    $status = true;
+    $start = 3;
+    
     var win = $(window);
-    var $start = 3;
-    var status = true;
     var loading = $("#loading");
     win.on('scroll', function() {
-        if (($(this).scrollTop() / ($(document).height() - $(this).height())) > 0.7 && status) {
-
+        if ((($(this).scrollTop() / ($(document).height() - $(this).height())) > 0.7) && $status) {
+            
+            //Kiểm tra có phải lần đầu tiên scroll không
+            if($start == 0){
+                $start = 3;
+            }
+            //Khi thanh cuộn hoạt động tì gửi thông tin lên server
             $.ajax({
                 type: 'POST',
-                url: "loading",
+                url: "advance_search",
                 dataType: 'json',
                 data: {
                     start: $start,
+                    ser: ser,
+                    pur: pur,
+                    street: street,
+                    pro: pro,
+                    cat: cat,
+                    dist: dist,
+                    a : a,
+                    orderby: orderby
                 },
                 beforeSend: function(xhr) {
-                    status = false;
+                    $status = false;
                     loading.show();
                 },
                 success: function(data, textStatus, jqXHR) {
@@ -64,7 +78,7 @@ $(function() {
                     }
                 },
                 complete: function() {
-                    status = true;
+                    $status = true;
                     loading.hide();
                     $start += 5;
                 }

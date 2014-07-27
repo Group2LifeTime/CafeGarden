@@ -37,11 +37,11 @@ div#index div.main-content img {
 /*Style for row*/
 div#index div.main-content div.row{
     background-color: white;
-    height: 200px;
+/*    height: 200px;*/
     padding: 10px;
     border-bottom: #CC8174 solid 3px;
     border-top: #CC8174 solid 3px;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 
 
@@ -233,4 +233,29 @@ div#place div.panel div.panel-body{
 #gmap{
     width: 300px;
     height: 300px;
+}
+
+#search_place_near{
+    padding: 0.2em;
+    color: white;
+    margin: 3px;
+}
+#search_place_near{
+    background-color:#805149; 
+}
+#search_place_near:hover{
+    background-color:rgba(128, 81, 73,0.7); 
+}
+
+.view_detail{
+    background-color: #CC8174 !important;
+}
+
+#search_list{
+    background: #805149;
+    padding: 0.2em;
+}
+
+#search_list:hover{
+    background-color:rgba(128, 81, 73,0.7); 
 }

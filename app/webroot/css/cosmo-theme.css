@@ -5400,20 +5400,12 @@ table .success a, .table .success a, table .warning a, .table .warning a, table 
     height: 40px;
     background: #CC8174;
 }
-.search_place_near{
-    float: right;
-    margin-right: 5px;
-    padding: 5px;
-}
+
 
 .list_search{
     float: left;
     margin-left: 5px;
     padding: 5px;
-}
-
-.search_place_near, .list_search button{
-    border-radius: 5px;
 }
 
 .button_show{

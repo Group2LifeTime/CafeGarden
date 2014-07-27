@@ -23,9 +23,16 @@ class PlacesController extends AppController {
             'fields' => array('Purport.code', 'Purport.name'),
                 )
         );
+
+        //Lấy thông tin các tỉnh thành
+        $provinces = $this->Place->find('all', array(
+            'fields' => 'DISTINCT Place.province'
+        ));
+
         $this->set("places", $places);
         $this->set("services", $services);
         $this->set("purports", $purports);
+        $this->set("provinces", $provinces);
     }
 
     public function place($id) {
@@ -39,21 +46,21 @@ class PlacesController extends AppController {
      * 
      * Hàm load thêm dữ liệu khi người dùng kéo scroll xuống dưới
      */
-    public function loading() {
-        $this->autoRender = false;
-        $this->request->onlyAllow('ajax');
-
-        //Lấy thông tin client gửi lên
-        $start = $_POST['start'];
-        $arr = $this->Place->find('all', array(
-            'order' => 'Place.id asc',
-            'limit' => 3,
-            'offset' => $start
-        ));
-
-
-        return json_encode($arr);
-    }
+//    public function loading() {
+//        $this->autoRender = false;
+//        $this->request->onlyAllow('ajax');
+//
+//        //Lấy thông tin client gửi lên
+//        $start = $_POST['start'];
+//        $arr = $this->Place->find('all', array(
+//            'order' => 'Place.id asc',
+//            'limit' => 3,
+//            'offset' => $start
+//        ));
+//
+//
+//        return json_encode($arr);
+//    }
 
     /**
      * Hàm tìm kiếm dữ liệu khi người dùng lựa chọn tiêu chí tìm kiếm
@@ -63,17 +70,21 @@ class PlacesController extends AppController {
         $this->request->onlyAllow('ajax');
 
         //Lấy thông tin client gửi lên
+        $start = $_POST['start'];
         $ser = $_POST['ser'];
         $pur = $_POST['pur'];
         $street = $_POST['street'];
         $pro = $_POST['pro'];
         $cat = $_POST['cat'];
-
+        $dist = $_POST['dist'];
+        $a = $_POST['a'];
+        $orderby = $_POST['orderby'];
+        
         //Kiểm tra thông tin của các biến gửi tới và tách mảng giá trị
         $place_id_ser = array();
         $place_id_pur = array();
         $places = array();
-        
+
         if ($ser != "") {
             $arr_ser = explode(",", $ser);
             //Tìm tất cả các quán có dịch vụ tương ứng 
@@ -86,13 +97,13 @@ class PlacesController extends AppController {
                 'order' => 'ServicesPlace.id asc',
             ));
             //Duyệt qua tất cả các id của quán
-            foreach ($place_ser as $item){
+            foreach ($place_ser as $item) {
                 $place_id_ser[] = $item['ServicesPlace']['places_id'];
             }
         }
         if ($pur != "") {
             $arr_pur = explode(",", $pur);
-            
+
             //Đếm số phần tử của mảng các dịch vụ được chọn
             $num_pur = count($arr_pur);
             //Tìm tất cả các quán có mục đích tương ứng
@@ -104,58 +115,169 @@ class PlacesController extends AppController {
                 'order' => 'PlacesPurport.id asc'
             ));
             //Duyệt qua tất cả các id của quán
-            foreach ($place_pur as $item){
+            foreach ($place_pur as $item) {
                 $place_id_pur[] = $item['PlacesPurport']['places_id'];
             }
         }
-        
-        //Nếu mà hai mảng đều rỗng thì tìm các quán với giá trị đường phố nhập vào
-        if((count($place_id_ser)==0)&&(count($place_id_pur)==0)){
-            $places = $this->Place->find('all',array(
-                'conditions'=>array(
-                    'Place.street LIKE'=>"%$street%"
-                ),
-                'order'=>'Place.id asc'
-            ));
-        }else if((count($place_id_ser)!= 0)&&(count($place_id_pur)==0)){
-            $places = $this->Place->find('all', array(
-                'conditions'=>array(
-                    'Place.code'=>$place_id_ser,
-                    'Place.street LIKE'=>"%$street%"
-                ),
-                'order'=>'Place.id asc'
-            ));
-        }else if((count($place_id_pur)!= 0)&&(count($place_id_ser)==0)){
-            $places = $this->Place->find('all', array(
-                'conditions'=>array(
-                    'Place.code'=>$place_id_pur,
-                    'Place.street LIKE'=>"%$street%"
-                ),
-                'order'=>'Place.id asc'
-            ));
-        }else{//Lấy giao của hai mảng id của quán
-            $arr_pur_ser = array_intersect($place_id_pur, $place_id_ser);
-            $places = $this->Place->find('all', array(
-                'conditions'=>array(
-                    'Place.code'=>$arr_pur_ser,
-                    'Place.street LIKE'=>"%$street%"
-                ),
-                'order'=>'Place.id asc'
-            ));
+
+
+        //Kiểm tra trường pro
+        if ($pro != "") {
+            //Nếu mà hai mảng đều rỗng thì tìm các quán với giá trị đường phố nhập vào
+            if ((count($place_id_ser) == 0) && (count($place_id_pur) == 0)) {
+                $places = $this->Place->find('all', array(
+                    'conditions' => array(
+                        'Place.street LIKE' => "%$street%",
+                        'Place.district LIKE'=> "%$dist%",
+                        'Place.name LIKE'=> "%$a%",
+                        'Place.province' => $pro,
+                    ),
+                    'order' => 'Place.'.$orderby,
+                    'limit'=>3,
+                    'offset'=>$start
+                ));
+            } else if ((count($place_id_ser) != 0) && (count($place_id_pur) == 0)) {
+                $places = $this->Place->find('all', array(
+                    'conditions' => array(
+                        'Place.code' => $place_id_ser,
+                        'Place.street LIKE' => "%$street%",
+                        'Place.district LIKE'=> "%$dist%",
+                        'Place.name LIKE'=> "%$a%",
+                        'Place.province' => $pro,
+                    ),
+                    'order' => 'Place.'.$orderby,
+                    'limit'=>3,
+                    'offset'=>$start
+                ));
+            } else if ((count($place_id_pur) != 0) && (count($place_id_ser) == 0)) {
+                $places = $this->Place->find('all', array(
+                    'conditions' => array(
+                        'Place.code' => $place_id_pur,
+                        'Place.street LIKE' => "%$street%",
+                        'Place.district LIKE'=> "%$dist%",
+                        'Place.name LIKE'=> "%$a%",
+                        'Place.province' => $pro,
+                    ),
+                    'order' => 'Place.'.$orderby,
+                    'limit'=>3,
+                    'offset'=>$start
+                ));
+            } else {//Lấy giao của hai mảng id của quán
+                $arr_pur_ser = array_intersect($place_id_pur, $place_id_ser);
+                $places = $this->Place->find('all', array(
+                    'conditions' => array(
+                        'Place.code' => $arr_pur_ser,
+                        'Place.street LIKE' => "%$street%",
+                        'Place.district LIKE'=> "%$dist%",
+                        'Place.name LIKE'=> "%$a%",
+                        'Place.province' => $pro,
+                    ),
+                    'order' => 'Place.'.$orderby,
+                    'limit'=>3,
+                    'offset'=>$start
+                ));
+            }
+        } else {
+            //Nếu mà hai mảng đều rỗng thì tìm các quán với giá trị đường phố nhập vào
+            if ((count($place_id_ser) == 0) && (count($place_id_pur) == 0)) {
+                $places = $this->Place->find('all', array(
+                    'conditions' => array(
+                        'Place.street LIKE' => "%$street%",
+                        'Place.district LIKE'=> "%$dist%",
+                        'Place.name LIKE'=> "%$a%",
+                    ),
+                    'order' => 'Place.'.$orderby,
+                    'limit'=>3,
+                    'offset'=>$start
+                ));
+            } else if ((count($place_id_ser) != 0) && (count($place_id_pur) == 0)) {
+                $places = $this->Place->find('all', array(
+                    'conditions' => array(
+                        'Place.code' => $place_id_ser,
+                        'Place.street LIKE' => "%$street%",
+                        'Place.district LIKE'=> "%$dist%",
+                        'Place.name LIKE'=> "%$a%",
+                    ),
+                    'order' => 'Place.'.$orderby,
+                    'limit'=>3,
+                    'offset'=>$start
+                ));
+            } else if ((count($place_id_pur) != 0) && (count($place_id_ser) == 0)) {
+                $places = $this->Place->find('all', array(
+                    'conditions' => array(
+                        'Place.code' => $place_id_pur,
+                        'Place.street LIKE' => "%$street%",
+                        'Place.district LIKE'=> "%$dist%",
+                        'Place.name LIKE'=> "%$a%",
+                    ),
+                    'order' => 'Place.'.$orderby,
+                    'limit'=>3,
+                    'offset'=>$start
+                ));
+            } else {//Lấy giao của hai mảng id của quán
+                $arr_pur_ser = array_intersect($place_id_pur, $place_id_ser);
+                $places = $this->Place->find('all', array(
+                    'conditions' => array(
+                        'Place.code' => $arr_pur_ser,
+                        'Place.street LIKE' => "%$street%",
+                        'Place.district LIKE'=> "%$dist%",
+                        'Place.name LIKE'=> "%$a%",
+                    ),
+                   'order' => 'Place.'.$orderby,
+                    'limit'=>3,
+                    'offset'=>$start
+                ));
+            }
         }
-        
+
+
         return json_encode($places);
     }
 
     /**
      * Hàm lấy thông tin các địa điểm gửi về khi search map
      */
-    
-    function search_map(){
+    function search_map() {
         $this->autoRender = false;
         $this->request->onlyAllow('ajax');
-        
+
         $pleaces_map = $this->Place->find('all');
         return json_encode($pleaces_map);
+    }
+
+    /**
+     * Hàm lấy các quận của một tỉnh thành
+     */
+    function search_province() {
+        $this->autoRender = false;
+        $this->request->onlyAllow('ajax');
+
+        //Lấy dữ liệu gửi từ client
+        $pro = $_POST['pro'];
+        $districts = $this->Place->field('all', array(
+            'conditions' => array(
+                'Place.province' => $pro,
+            ),
+            'fields' => 'DISTINCT Place.district'
+        ));
+
+        return json_encode($districts);
+    }
+
+    /**
+     * Hàm tìm tên tất cả các quận
+     */
+    function search_district(){
+        $this->autoRender = false;
+        $this->request->onlyAllow('ajax');
+        $dist = $_POST['content'];        
+        $districts = $this->Place->find('all', array(
+            'conditions'=>array(
+                'Place.district LIKE'=>"%$dist%"
+            ),
+            'fields'=>'DISTINCT Place.district'
+        ));
+        
+        return json_encode($districts);
     }
 }

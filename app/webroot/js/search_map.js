@@ -53,81 +53,13 @@ function getZoom(rad) {
         return 12;
     }
     else
-        return 11;
+        return 8;
 }
-
-
-
-function getMap() {
-    var map = new google.maps.Map(document.getElementById('google_canvas'), {
-        zoom: 8,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    });
-    var geolocate;
-    navigator.geolocation.getCurrentPosition(function(position) {
-        geolocate = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        map.setCenter(geolocate);
-        ;
-        var marker = new google.maps.Marker({
-            position: geolocate,
-            map: map
-        });
-        var infowindow = new google.maps.InfoWindow();
-        var radius = getRadius();
-        var zoo = getZoom(radius);
-        map.setZoom(zoo);
-        var i = 0;
-        /**
-         *Draw circle in the map 
-         *radius of circle = radius
-         */
-        var circleOptions = {
-            strokeColor: 'blue',
-            strokeOpacity: 0.5,
-            strokeWeight: 1,
-            fillColor: 'yellow',
-            fillOpacity: 0.1,
-            map: map,
-            center: geolocate,
-            radius: radius * 1000
-        };
-        //remove previous circle
-        cityCircle.setMap(null);
-        // Add the circle for this city to the map.
-        cityCircle = new google.maps.Circle(circleOptions);
-        /**
-         * Ä?Æ°a tá»?a Ä‘á»™ quÃ¡n cafe lÃªn báº£n Ä‘á»“ vÃ  show info
-         * DÃ¹ng marker vÃ  infoWindow
-         */
-        for (i = 0; i < locations.length; i++) {
-            var distance = calDistance(geolocate.lat(), geolocate.lng(), locations[i][3], locations[i][4]);
-            if (distance < radius) {
-                marker = new google.maps.Marker({
-                    position: new google.maps.LatLng(locations[i][3], locations[i][4]),
-                    icon: image,
-                    map: map
-                });
-                google.maps.event.addListener(marker, 'click', (function(marker, i) {
-                    return function() {
-                        var str = locations[i][11] + ", " + locations[i][8] + ", " + locations[i][12] + ", " + locations[i][7] + ", " + locations[i][10] + ", " + locations[i][9];
-                        str = "<div><a href = \"http://Quancafe.vn\">" + locations[i][1] + "</a></div>" + str + "... ";
-                        infowindow.setContent(str);
-                        infowindow.setOptions({maxWidth: 250});
-                        infowindow.open(map, marker);
-                    }
-                })(marker, i));
-            }
-        }
-    });
-
-}
-
-
 
 
 function handlerDataReceivMap(data) {
     var image = {
-        url: 'red_cafe.png',
+        url: '/CafeGarden/img/red_cafe.png',
         //This marker is x pixels wide by y pixels tall.
         size: new google.maps.Size(37, 48),
         //The origin for this image is 0,0.
@@ -154,8 +86,11 @@ function handlerDataReceivMap(data) {
         });
         var infowindow = new google.maps.InfoWindow();
         var i = 0;
-        var radius = 3;
-        map.setZoom(15);
+
+        //Lấy bán kính cần xét
+        var radius = $("#radius").val();
+
+        map.setZoom(12);
         /**
          *Draw circle in the map 
          *radius of circle = radius
@@ -177,6 +112,7 @@ function handlerDataReceivMap(data) {
         /**
          * Lấy danh sách long, lat
          */
+        var k =0;
         for (var x in locations) {
             for (var y in locations[x]) {
                 var distance = calDistance(geolocate.lat(), geolocate.lng(), locations[x][y].latitude, locations[x][y].longitude);
@@ -186,36 +122,58 @@ function handlerDataReceivMap(data) {
                         icon: image,
                         map: map
                     });
-                    google.maps.event.addListener(marker, 'click', (function(marker) {
-                        return function() {
-                            var str = locations[x][y].houseno + ', ' + locations[x][y].street + ', ' + locations[x][y].district + ', ' + locations[x][y].province + ', ' + locations[x][y].national;
-                            str = '<div><a href ="/CafeGarden/places/place/'+locations[x][y].id+'"><h1>' + locations[x][y].name + "<h1></a></div>" + str + "... ";
-                            //alert(str);
-                            infowindow.setContent(str);
-                            infowindow.setOptions({maxWidth: 250});
-
-                            infowindow.open(map, marker);
-                        }
-                    })(marker, i));
                 }
+                google.maps.event.addListener(marker, 'click', (function(marker,x) {
+                    return function() {
+                        var str = locations[x][y].houseno + ', ' + locations[x][y].street + ', ' + locations[x][y].district + ', ' + locations[x][y].province + ', ' + locations[x][y].national;
+                        str = '<div><a href ="/CafeGarden/places/place/' + locations[x][y].id + '"><h3>' + locations[x][y].name + "<h3></a></div>" + str + "... ";
+
+                        infowindow.setContent(str);
+                        infowindow.setOptions({maxWidth: 250});
+
+                        infowindow.open(map, marker);
+                    }
+                })(marker,k));
+                k++;
             }
+
         }
     });
 }
 
 $(function() {
-    $(".search_place_near").click(function() {
+
+    $("#search_place_near").click(function() {
+
+        //Đặt lại cờ flag_map
+        flag_map = true;
 
         //Ẩn danh sách các quán
         $(".show_more_place").empty();
 
+        //Tắt sự kiện loading
+        $status = false;
+
+        //Định dạng thẻ google_canvas
+        $("#google_canvas").css({height: "500px"});
         //Gửi thông tin yêu cầu lên server
         $.ajax({
             type: 'POST',
-            url: "search_map",
+            url: "advance_search",
             dataType: 'json',
+            data: {
+                start: $start,
+                ser: ser,
+                pur: pur,
+                street: street,
+                pro: pro,
+                cat: cat,
+                dist: dist,
+                a: a,
+                orderby: orderby
+            },
             success: function(data, textStatus, jqXHR) {
-                if (data) {
+                if (data && flag_map) {
                     handlerDataReceivMap(data);
                 }
             },

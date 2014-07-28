@@ -4,7 +4,7 @@ class PlacesController extends AppController {
 
     var $name = "Places";
     var $helpers = array('Html', 'Form', 'Js', 'Address');
-    var $uses = array('Service', 'Place', 'Purport', 'ServicesPlace', 'PlacesPurport');
+    var $uses = array('Service', 'Place', 'Purport', 'ServicesPlace', 'PlacesPurport','Image', 'Informations');
 
     public function index() {
         $this->layout = "template";
@@ -35,33 +35,41 @@ class PlacesController extends AppController {
         $this->set("provinces", $provinces);
     }
 
+
+    
     public function place($id) {
         $place = $this->Place->findById($id);
+        $services = $this->Service->find('all');
+        $purports = $this->Purport->find('all');
+        $ser = $this->ServicesPlace->find('all', array(
+            'conditions'=>array(
+                'ServicesPlace.places_id'=>$place['Place']['code']
+            )
+        ));
+        $pur = $this->PlacesPurport->find('all', array(
+            'conditions'=>array(
+                'PlacesPurport.places_id'=>$place['Place']['code']
+            )
+        ));
+        
+        $info = $this->Informations->find('all', array(
+            'conditions'=>array(
+                'Informations.code'=>$place['Place']['code']
+            )
+        ));
+        
         $this->layout = "template";
         $this->set('title_for_layout', $place['Place']['name'] . ' | Cafe Garden');
         $this->set('place', $place);
+        $this->set('services', $services);
+        $this->set('purports', $purports);
+        $this->set('ser', $ser);
+        $this->set('pur', $pur);
+        $this->set('info', $info);
+               
     }
 
-    /**
-     * 
-     * Hàm load thêm dữ liệu khi người dùng kéo scroll xuống dưới
-     */
-//    public function loading() {
-//        $this->autoRender = false;
-//        $this->request->onlyAllow('ajax');
-//
-//        //Lấy thông tin client gửi lên
-//        $start = $_POST['start'];
-//        $arr = $this->Place->find('all', array(
-//            'order' => 'Place.id asc',
-//            'limit' => 3,
-//            'offset' => $start
-//        ));
-//
-//
-//        return json_encode($arr);
-//    }
-
+ 
     /**
      * Hàm tìm kiếm dữ liệu khi người dùng lựa chọn tiêu chí tìm kiếm
      */
@@ -79,6 +87,7 @@ class PlacesController extends AppController {
         $dist = $_POST['dist'];
         $a = $_POST['a'];
         $orderby = $_POST['orderby'];
+        $limit = $_POST['limit'];
         
         //Kiểm tra thông tin của các biến gửi tới và tách mảng giá trị
         $place_id_ser = array();
@@ -133,7 +142,7 @@ class PlacesController extends AppController {
                         'Place.province' => $pro,
                     ),
                     'order' => 'Place.'.$orderby,
-                    'limit'=>3,
+                    'limit'=>$limit,
                     'offset'=>$start
                 ));
             } else if ((count($place_id_ser) != 0) && (count($place_id_pur) == 0)) {
@@ -146,7 +155,7 @@ class PlacesController extends AppController {
                         'Place.province' => $pro,
                     ),
                     'order' => 'Place.'.$orderby,
-                    'limit'=>3,
+                    'limit'=>$limit,
                     'offset'=>$start
                 ));
             } else if ((count($place_id_pur) != 0) && (count($place_id_ser) == 0)) {
@@ -159,7 +168,7 @@ class PlacesController extends AppController {
                         'Place.province' => $pro,
                     ),
                     'order' => 'Place.'.$orderby,
-                    'limit'=>3,
+                    'limit'=>$limit,
                     'offset'=>$start
                 ));
             } else {//Lấy giao của hai mảng id của quán
@@ -173,7 +182,7 @@ class PlacesController extends AppController {
                         'Place.province' => $pro,
                     ),
                     'order' => 'Place.'.$orderby,
-                    'limit'=>3,
+                    'limit'=>$limit,
                     'offset'=>$start
                 ));
             }
@@ -187,7 +196,7 @@ class PlacesController extends AppController {
                         'Place.name LIKE'=> "%$a%",
                     ),
                     'order' => 'Place.'.$orderby,
-                    'limit'=>3,
+                    'limit'=>$limit,
                     'offset'=>$start
                 ));
             } else if ((count($place_id_ser) != 0) && (count($place_id_pur) == 0)) {
@@ -199,7 +208,7 @@ class PlacesController extends AppController {
                         'Place.name LIKE'=> "%$a%",
                     ),
                     'order' => 'Place.'.$orderby,
-                    'limit'=>3,
+                    'limit'=>$limit,
                     'offset'=>$start
                 ));
             } else if ((count($place_id_pur) != 0) && (count($place_id_ser) == 0)) {
@@ -211,7 +220,7 @@ class PlacesController extends AppController {
                         'Place.name LIKE'=> "%$a%",
                     ),
                     'order' => 'Place.'.$orderby,
-                    'limit'=>3,
+                    'limit'=>$limit,
                     'offset'=>$start
                 ));
             } else {//Lấy giao của hai mảng id của quán
@@ -224,7 +233,7 @@ class PlacesController extends AppController {
                         'Place.name LIKE'=> "%$a%",
                     ),
                    'order' => 'Place.'.$orderby,
-                    'limit'=>3,
+                    'limit'=>$limit,
                     'offset'=>$start
                 ));
             }
@@ -279,5 +288,21 @@ class PlacesController extends AppController {
         ));
         
         return json_encode($districts);
+    }
+    
+    /**
+     * Slide for place 
+     */
+    
+    function slide($id){
+    	$this->layout='empty_layout';
+    	$place = $this->Place->findById($id);
+        $images = $this->Image->find('all', array(
+            'conditions'=>array(
+                'Image.code'=>$place['Place']['code']
+            )
+        ));
+    	$this->set('place', $place);
+    	$this->set('images', $images);
     }
 }

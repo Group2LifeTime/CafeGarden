@@ -1,10 +1,22 @@
+<?php
 
+$sp = array();
+foreach ($ser as $value) {
+    $sp[] = $value['ServicesPlace']['services_id'];
+}
+
+//phu hop voi
+$pp = array();
+foreach ($pur as $value) {
+    $pp[] = $value['PlacesPurport']['purports_id'];
+}
+?>
 <div class="content container" id="place">
     <div id="header">
-        <h1 class="title"><?php echo $place['Place']['name'];?></h1>
-        
-        <p><?php echo $this->Address->createAddress($place);?></p>
-        
+        <h1 class="title"><?php echo $place['Place']['name']; ?></h1>
+
+        <p><?php echo $this->Address->createAddress($place); ?></p>
+
         <div id="nav" class="col-md-12">
             <ul class="nav nav-pills">
                 <li class="active"><a href="#">Trang chủ</a></li>
@@ -19,7 +31,9 @@
 
     <div id="side" class="container-fluid wrap-item">
         <div id="side-img" class="col-md-8">
-            <?php echo $this->Html->image($place['Place']['image'])?>
+            <!-- Start WOWSlider.com -->
+            <iframe src="/CafeGarden/places/slide/<?php echo $place['Place']['id']; ?>" style="width:620px;height:320px;max-width:100%;overflow:hidden;border:none;padding:0;margin:0 auto;display:block;" marginheight="0" marginwidth="0"></iframe>
+            <!-- End WOWSlider.com -->
         </div>
         <div id="event" class="col-md-4 wrap-item">
             <h4>Sự kiện</h4>
@@ -77,7 +91,7 @@
                 </div>
                 <div class="panel-body">
                     <p>
-                        <?php echo $place['Place']['intro']?>
+                        <?php echo $place['Place']['intro'] ?>
                     </p>
                 </div>
             </div>
@@ -122,6 +136,7 @@
         </div>
     </div>
 
+    <!-- ***************************************Dich Vu ********************************* -->
     <div id="dichvu" class="container-fluid wrap-item">
         <div class="panel ">
             <div class="panel-heading">
@@ -129,27 +144,26 @@
             </div>
             <div class="panel-body">
                 <ul class="list-group contairner-fluid">
-                    <li class="list-group-item col-md-4">
-                        <input id="demo_box_1" class="css-checkbox" type="checkbox" />
-                        <label for="demo_box_1" name="demo_lbl_1" class="css-label">Internet Wifi</label>
-                    </li>
-                    <li class="list-group-item col-md-4">
-                        <input id="demo_box_2" class="css-checkbox" type="checkbox" />
-                        <label for="demo_box_2" name="demo_lbl_2" class="css-label">Internet Wifi</label>
-                    </li>
-                    <li class="list-group-item col-md-4">
-                        <input id="demo_box_3" class="css-checkbox" type="checkbox" />
-                        <label for="demo_box_3" name="demo_lbl_3" class="css-label">Internet Wifi</label>
-                    </li>
-                    <li class="list-group-item col-md-4">
-                        <input id="demo_box_4" class="css-checkbox" type="checkbox" />
-                        <label for="demo_box_4" name="demo_lbl_4" class="css-label">Internet Wifi</label>
-                    </li>
+                    <?php
+                    foreach ($services as $service) {
+                        $code = $service['Service']['code'];
+                        $xhtml = '<li class="list-group-item col-md-4">';
+                        if (array_search($code, $sp) === false) {
+                            $xhtml .= '<input id="' . $code . '" class="css-checkbox" type="checkbox" disabled="disabled"/>';
+                        } else {
+                            $xhtml .= '<input id="' . $code . '" class="css-checkbox" type="checkbox" checked="checked" disabled="disabled"/>';
+                        }
+                        $xhtml .= '<label for="' . $service['Service']['code'] . '" name="' . $service['Service']['code'] . '" class="css-label">' . $service['Service']['name'] . '</label>';
+                        $xhtml .= '</li>';
+                        echo $xhtml;
+                    }
+                    ?>
                 </ul>
             </div>
         </div>
     </div>
 
+    <!-- ***************************************Phu Hop ********************************* -->
     <div id="phuhop" class="container-fluid wrap-item">
         <div class="panel ">
             <div class="panel-heading">
@@ -157,22 +171,21 @@
             </div>
             <div class="panel-body">
                 <ul class="list-group contairner-fluid">
-                    <li class="list-group-item col-md-4">
-                        <input id="demo_box_1" class="css-checkbox" type="checkbox" />
-                        <label for="demo_box_1" name="demo_lbl_1" class="css-label">Internet Wifi</label>
-                    </li>
-                    <li class="list-group-item col-md-4">
-                        <input id="demo_box_2" class="css-checkbox" type="checkbox" />
-                        <label for="demo_box_2" name="demo_lbl_2" class="css-label">Internet Wifi</label>
-                    </li>
-                    <li class="list-group-item col-md-4">
-                        <input id="demo_box_3" class="css-checkbox" type="checkbox" />
-                        <label for="demo_box_3" name="demo_lbl_3" class="css-label">Internet Wifi</label>
-                    </li>
-                    <li class="list-group-item col-md-4">
-                        <input id="demo_box_4" class="css-checkbox" type="checkbox" />
-                        <label for="demo_box_4" name="demo_lbl_4" class="css-label">Internet Wifi</label>
-                    </li>
+                    <?php
+                    foreach ($purports as $purport) {
+                        $code = $purport['Purport']['code'];
+                        $xhtml = '<li class="list-group-item col-md-4">';
+                        if (array_search($code, $pp) === false) {
+                            $xhtml .= '<input id="' . $code . '" class="css-checkbox" type="checkbox" disabled="disabled"/>';
+                        } else {
+                            $xhtml .= '<input id="' . $code . '" class="css-checkbox" type="checkbox" checked="checked" disabled="disabled"/>';
+                        }
+
+                        $xhtml .= '<label for="' . $code . '" name="' . $code . '" class="css-label">' . $purport['Purport']['name'] . '</label>';
+                        $xhtml .= '</li>';
+                        echo $xhtml;
+                    }
+                    ?>
                 </ul>
             </div>
         </div>
@@ -185,9 +198,30 @@
             </div>
             <div class="panel-body">
                 <ul class="list-group contairner-fluid">
-                    <li class="list-group-item">
-                        Thời gian phục vụ:06:00 - 23:00
-                    </li>
+                    
+                    <?php 
+                        
+                        $row = '<li class="list-group-item">';
+                        $row .= 'Thời gian phục vụ:'.$info[0]['Informations']['timeservice'];
+                        $row .= '</li>';          
+                        $row .= '<li class="list-group-item">';
+                        $row .= 'Ngày nghỉ:'.$info[0]['Informations']['holiday'];
+                        $row .= '</li>'; 
+                        $row .= '<li class="list-group-item">';
+                        $row .= 'Sức chứa:'.$info[0]['Informations']['storage'];
+                        $row .= '</li>';
+                        $row .= '<li class="list-group-item">';
+                        $row .= 'Giá trung bình:'.$info[0]['Informations']['priceavg'];
+                        $row .= '</li>'; 
+                        $row .= '<li class="list-group-item">';
+                        $row .= 'Phương thức thanh toán:'.$info[0]['Informations']['methodpay'];
+                        $row .= '</li>';
+                        $row .= '<li class="list-group-item">';
+                        $row .= 'Ngôn ngữ:'.$info[0]['Informations']['lang'];
+                        $row .= '</li>'; 
+                        echo $row;
+                    ?>
+                    
                 </ul>
             </div>
         </div>

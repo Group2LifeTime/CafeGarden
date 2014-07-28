@@ -262,8 +262,12 @@
                                     echo $xhtml;
                                 }
                                 ?>
-
+                                                                
                             </div>
+                            <div id="xemthemmap" style="display: none;">
+                                <button id="bt_xem_them_map" class="btn btn-sm">Xem thêm</button>
+                            </div>
+                            
                             <div id="loading">
                                 Đang tải dữ liệu...
                             </div>              

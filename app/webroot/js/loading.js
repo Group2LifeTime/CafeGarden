@@ -64,7 +64,8 @@ $(function() {
                     cat: cat,
                     dist: dist,
                     a : a,
-                    orderby: orderby
+                    orderby: orderby,
+                    limit:limit
                 },
                 beforeSend: function(xhr) {
                     $status = false;

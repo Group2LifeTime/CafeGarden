@@ -145,6 +145,9 @@ $(function() {
 
     $("#search_place_near").click(function() {
 
+        $("#xemthemmap").show();
+        $("#xemthemmap").css({height:"30px"});
+        
         //Đặt lại cờ flag_map
         flag_map = true;
 
@@ -170,7 +173,41 @@ $(function() {
                 cat: cat,
                 dist: dist,
                 a: a,
-                orderby: orderby
+                orderby: orderby,
+                limit: limit
+            },
+            success: function(data, textStatus, jqXHR) {
+                if (data && flag_map) {
+                    handlerDataReceivMap(data);
+                }
+            },
+            beforeSend: function(xhr) {
+                $("#loading").show();
+            },
+            complete: function() {
+                $("#loading").hide();
+            }
+        });
+    });
+    
+    //Bắt sự kiện người dùng nhấn nút xem thêm trên map
+    $("#bt_xem_them_map").click(function(){
+        limit += 3;
+        $.ajax({
+            type: 'POST',
+            url: "advance_search",
+            dataType: 'json',
+            data: {
+                start: $start,
+                ser: ser,
+                pur: pur,
+                street: street,
+                pro: pro,
+                cat: cat,
+                dist: dist,
+                a: a,
+                orderby: orderby,
+                limit: limit
             },
             success: function(data, textStatus, jqXHR) {
                 if (data && flag_map) {

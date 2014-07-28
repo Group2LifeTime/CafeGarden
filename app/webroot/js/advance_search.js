@@ -30,6 +30,7 @@ function handlerDataProvince(data) {
                     '<input value="' + place[x][y].district + '" class="css-checkbox" type="checkbox" />' +
                     '<label class="css-label">' + place[x][y].district + '</label>' +
                     '</li>';
+            console.log(row);
             $("#dis-list").append(row);
         }
     }
@@ -81,7 +82,7 @@ function handlerDataSearch(data) {
  * Hàm gửi thông tin các biến yêu cầu tìm kiếm lên 
  */
 
-function submmit_search(p_ser, p_pur, p_street, p_pro, p_cat, p_dist, p_a, p_orderby) {
+function submmit_search(p_ser, p_pur, p_street, p_pro, p_cat, p_dist, p_a, p_orderby, p_limit) {
 
     var $loading = $("#loading");
 
@@ -101,7 +102,8 @@ function submmit_search(p_ser, p_pur, p_street, p_pro, p_cat, p_dist, p_a, p_ord
             cat: p_cat,
             dist: p_dist,
             a: p_a,
-            orderby: p_orderby
+            orderby: p_orderby,
+            limit: p_limit
         },
         beforeSend: function(xhr) {
             $loading.show();
@@ -138,7 +140,8 @@ $(function() {
     dist = " "; //Lưu tên của quận cần tìm kiếm
     a = " "; //Lưu tên quán cần tìm kiếm
     orderby = "id asc"; //Lưu tùy chọn sắp xếp quán mặc định là tăng dần về id
-
+    limit = 3; //Lưu số quán được hiển thị ra ngoài
+    
     //Bắt sự kiện khi người dùng nhả nút bàn phím để lấy thông tin gợi ý
     $("#dis_text").keyup(function() {
         var content = $(this).val();
@@ -187,22 +190,22 @@ $(function() {
             $("#select_province").change(function() {
                 pro = $("select[id='select_province'] option:selected").attr("value");
                 //Gửi thông tin lên server lấy thông tin các quận thuộc tỉnh về
-                if (pro != "") {
+                if (pro !== "") {
                     $.ajax({
                         type: 'POST',
                         url: "search_province",
                         dataType: 'json',
                         data: {
-                            pro: pro,
+                            pro: pro
                         },
                         success: function(data, textStatus, jqXHR) {
                             if (data) {
                                 //Xử lý dữ liệu lấy về
                                 handlerDataProvince(data);
-                            } else {
+                            }else {
                                 $(window).off('change');
                             }
-                        },
+                        }
                     });
                 }
                 
@@ -210,7 +213,7 @@ $(function() {
         });
 
         //Gửi thông tin lên server
-        submmit_search(ser, pur, street, pro, cat, dist, a, orderby);
+        submmit_search(ser, pur, street, pro, cat, dist, a, orderby, limit);
     });
 
     //Bắt sự kiện khi nhấn nút search
@@ -222,23 +225,28 @@ $(function() {
         //Xóa nội dung các quán trước đó
         $(".show_more_place").empty();
         //Gửi thông tin tìm kiếm lên server
-        submmit_search(ser, pur, street, pro, cat, dist, a, orderby);
+        submmit_search(ser, pur, street, pro, cat, dist, a, orderby, limit);
     });
 
 
     //Bắt sự kiện người dùng nhấn vào button xem them danh sách
     $("#search_list").click(function() {
+        //Đặt lại giới hạn số quán hiển thị ra
+        limit = 3;
         //Đặt lại cờ flag_map
         flag_map = false;
 
         //Làm rỗng khu vực chèn map
         $("#google_canvas").empty();
-
+        
+        //Ẩn nút xem thêm kết quả của map
+        $("#xemthemmap").hide();
+        
         //Bật hiệu ứng scroll
         $status = true;
 
         //Load lại trang với giá trị tìm kiếm hiện tại
-        submmit_search(ser, pur, street, pro, cat, dist, a, orderby);
+        submmit_search(ser, pur, street, pro, cat, dist, a, orderby, limit);
     });
 
     //Bắt sự kiện người dùng chọn tùy chọn sắp xếp thay đổi biến orderby
@@ -271,7 +279,8 @@ $(function() {
                 cat: cat,
                 dist: dist,
                 a: a,
-                orderby: orderby
+                orderby: orderby,
+                limit: limit
             },
             beforeSend: function(xhr) {
                 $loading.show();

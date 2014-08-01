@@ -4,14 +4,14 @@ class PlacesController extends AppController {
 
     var $name = "Places";
     var $helpers = array('Html', 'Form', 'Js', 'Address');
-    var $uses = array('Service', 'Place', 'Purport', 'ServicesPlace', 'PlacesPurport','Image', 'Informations');
+    var $uses = array('Service', 'Place', 'Purport', 'ServicesPlace', 'PlacesPurport','Image', 'Informations','Comment');
 
     public function index() {
         $this->layout = "template";
         $this->set('title_for_layout', 'Cafe Garden | Welcome');
         $places = $this->Place->find('all', array(
             'order' => array('Place.id asc'),
-            'limit' => 3,
+            'limit' => 10,
             'offset' => 0
         ));
 
@@ -58,6 +58,18 @@ class PlacesController extends AppController {
             )
         ));
         
+        //Tăng lượt view lên trong cơ sở dữ liệu
+        $this->Place->read(null, $id);
+        $this->Place->set('view',$place['Place']['view']+1);
+        $this->Place->save();
+        
+        //Lấy thông tin các bài bình luận của quán
+        $comments = $this->Comment->find('all', array(
+            'conditions'=>array(
+                'Comment.places_id' => $id
+            ),
+            'order'=>'Comment.created desc'
+        ));
         $this->layout = "template";
         $this->set('title_for_layout', $place['Place']['name'] . ' | Cafe Garden');
         $this->set('place', $place);
@@ -66,7 +78,7 @@ class PlacesController extends AppController {
         $this->set('ser', $ser);
         $this->set('pur', $pur);
         $this->set('info', $info);
-               
+        $this->set('comments',$comments); 
     }
 
  
@@ -304,5 +316,35 @@ class PlacesController extends AppController {
         ));
     	$this->set('place', $place);
     	$this->set('images', $images);
+    }
+    
+    /**
+     * Xử lý thêm comment cho một địa điểm
+     */
+    function add_comment(){
+        $this->autoRender = false;
+        $this->request->onlyAllow('ajax');
+        
+        $content = $_POST['content'];
+        $places_id = $_POST['places_id'];
+        
+        $this->Comment->create();
+        $data = array('content'=>$content, 'places_id'=>$places_id, 'created'=> getdate());
+        $this->Comment->save($data);
+    }
+    /**
+     * Thêm lượt like cho một trang có id gửi tới
+     */
+    function add_like(){
+        $this->autoRender = false;
+        $this->request->onlyAllow('ajax');
+        
+        $places_id = $_POST['places_id'];
+        $place = $this->Place->findById($places_id);
+        
+        //Tăng lượt view lên trong cơ sở dữ liệu
+        $this->Place->read(null, $places_id);
+        $this->Place->set('numlike',$place['Place']['numlike']+1);
+        $this->Place->save();
     }
 }

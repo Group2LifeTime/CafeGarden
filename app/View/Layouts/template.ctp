@@ -49,6 +49,7 @@
     <?php echo $this->Html->script('loading'); ?>
     <?php echo $this->Html->script('search_map'); ?>
     <?php echo $this->Html->script('advance_search'); ?>
+    <?php echo $this->Html->script('comment'); ?>
 
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -92,10 +93,12 @@
                 
                 -->
                 <form class="navbar-form navbar-right">
+                    <!--
                     <select class="form-control">
                         <option>Tìm quán</option>
                         <option>Đồ uống</option>				
                     </select>
+                    -->
                     <input id="name_text" type="text" class="form-control col-lg-8"
                            placeholder="Tên quán">
                     <input id="dis_text" type="text" class="form-control col-lg-8"  autocomplete="off"

@@ -9,6 +9,12 @@ function handlerDataReceiv(data) {
     for (x in place) {
         for (var y in place[x]) {
             address = place[x][y].houseno + ', ' + place[x][y].street + ', ' + place[x][y].district + ', ' + place[x][y].province + ', ' + place[x][y].national;
+            var intro = (place[x][y].intro).trim();
+            if(intro == '...'){
+                intro = "Thông tin đang được cập nhật từ phía người sở hữu quán";
+            }else{
+                intro = intro.substring(0,300);
+            }
             var row = '<div class="row">' +
                     '<div class="col-xs-6 col-md-3">' +
                     '<a href="/CafeGarden/places/place/' + place[x][y].id + '" class="thumbnail">' +
@@ -19,7 +25,7 @@ function handlerDataReceiv(data) {
                     '<a href="/CafeGarden/places/place/' + place[x][y].id + '"><h3>' + place[x][y].name + '</h3></a>' +
                     '<p class="address">' + address + '</p>' +
                     '<p class="decription">' +
-                    (place[x][y].intro).trim().substring(0, 300) +
+                    intro +
                     '...</p>' +
                     '</div>' +
                     '<div class="rating col-md-2">' +
@@ -27,7 +33,6 @@ function handlerDataReceiv(data) {
                     '<ul>' +
                     '<li><span>' + place[x][y].numlike + '</span> lượt thích</li>' +
                     '<li><span>' + place[x][y].view + '</span> lượt xem</li>' +
-                    '<li><span>0</span> món phục vụ</li>' +
                     '</ul>' +
                     '</div>' +
                     '</div>';
@@ -39,7 +44,7 @@ function handlerDataReceiv(data) {
 
 $(function() {
     $status = true;
-    $start = 3;
+    $start = 10;
     
     var win = $(window);
     var loading = $("#loading");
@@ -48,7 +53,7 @@ $(function() {
             
             //Kiểm tra có phải lần đầu tiên scroll không
             if($start == 0){
-                $start = 3;
+                $start = 10;
             }
             //Khi thanh cuộn hoạt động tì gửi thông tin lên server
             $.ajax({
@@ -81,7 +86,7 @@ $(function() {
                 complete: function() {
                     $status = true;
                     loading.hide();
-                    $start += 5;
+                    $start += 10;
                 }
             });
         }

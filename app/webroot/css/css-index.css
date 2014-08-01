@@ -259,3 +259,31 @@ div#place div.panel div.panel-body{
 #search_list:hover{
     background-color:rgba(128, 81, 73,0.7); 
 }
+
+#clear_comment{
+    padding: 0.2em;
+    color: white;
+    margin: 3px;
+}
+#clear_comment{
+    background-color:#805149; 
+}
+#clear_comment:hover{
+    background-color:rgba(128, 81, 73,0.7); 
+}
+
+#submit_comment{
+    padding: 0.2em;
+    color: white;
+    margin: 3px;
+}
+#submit_comment{
+    background-color:#805149; 
+}
+#submit_comment:hover{
+    background-color:rgba(128, 81, 73,0.7); 
+}
+
+#add_comment{
+    text-align: right;
+}

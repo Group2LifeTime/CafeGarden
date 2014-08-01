@@ -10,12 +10,12 @@
                 <h4>Chọn tỉnh thành</h4>
                 <select class="form-control" id="select_province">
                     <option value="">--Tất cả--</option>
-                    <?php 
+                    <?php
                     /*
                      * Chèn các tỉnh thành trong database
                      */
-                    foreach ($provinces as $province){
-                        echo "<option value=\"".$province['Place']['province']."\">".$province['Place']['province']."</option>";
+                    foreach ($provinces as $province) {
+                        echo "<option value=\"" . $province['Place']['province'] . "\">" . $province['Place']['province'] . "</option>";
                     }
                     ?>
                 </select>
@@ -83,10 +83,10 @@
                     }
                     ?>
                 </ul>         
-                
+
             </div>
             <div class="panel-body">
-            <p id="service_show" class="button_show">Xem thêm >></p>
+                <p id="service_show" class="button_show">Xem thêm >></p>
             </div>
         </div>
 
@@ -112,24 +112,24 @@
                     }
                     ?>
                 </ul>
-                
+
             </div>
             <div class="panel-body">
                 <p id="purport_show" class="button_show">Xem thêm >></p>
             </div>
         </div>
-<!--
-        <div class="panel ">
-            <div class="panel-heading">
-                <h3 class="panel-title">Khoảng cách(km)</h3>
-            </div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <input type="text" class="form-control" id="inputDefault" placeholder="km">
+        <!--
+                <div class="panel ">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Khoảng cách(km)</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="inputDefault" placeholder="km">
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
--->
+        -->
         <div class="panel ">
             <div class="panel-heading">
                 <h3 class="panel-title">Loại quán</h3>
@@ -193,7 +193,7 @@
 
         <div class="panel">
             <div class="panel-heading container-fluid">
-                <h3 class="panel-title col-md-6">Có <span class="result-total">12/1200<span> kết quả</h3>
+                <!--<h3 class="panel-title col-md-6">Có <span class="result-total">12/1200</span> kết quả</h3>-->
                             <div class="col-md-4 navbar-right">
                                 <select class="form-control input-sm" id="orderby">
                                     <option value="id asc">----Sắp xếp----</option>
@@ -211,13 +211,13 @@
                                 <div class="list_search">
 
                                 </div>
-                
+
                                 <div class="form-group col-md-4 navbar-right">                                 
                                     <div class="input-group">      
-                                        <input id="radius" type="number" class="form-control input-sm" placeholder="km" value="0">                                      
+                                        <input id="radius" type="number" class="form-control input-sm" placeholder="km">                                      
                                         <span class="input-group-btn">
                                             <button id="search_place_near" class="btn btn-sm" type="button" title="Xem trên bản đồ">Tìm quán gần bạn</button>
-                                            
+
                                             <button id="search_list"type="button" class="btn btn-sm">
                                                 <img src="/CafeGarden/css/list_detail.png" style="height: 19px; width: 19px" title="Xem theo danh sách"/>
                                             </button>            
@@ -236,38 +236,38 @@
                                 foreach ($places as $place) {
                                     $address = $place['Place']['houseno'] . ", " . $place['Place']['street'] . ", " . $place['Place']['district'] . ', ' . $place['Place']['province'] . ", " . $place['Place']['national'];
                                     $xhtml = "";
-
+                                    $intro = trim($place['Place']['intro']);
+                                    
                                     $xhtml .= '<div class="row">
                                             <div class="col-xs-6 col-md-3">
                                                 <a href="/CafeGarden/places/place/' . $place['Place']['id'] . '" class="thumbnail">
-							 ' . $this->Html->image('front/'.$place['Place']['image'], array('alt' => 'CakePHP')) . '
+							 ' . $this->Html->image('front/' . $place['Place']['image'], array('alt' => 'CakePHP')) . '
                                                 </a>
                                             </div>
-                                                    <div class="details col-md-7">
+                                                    <div class="details col-md-7 col-xs-6">
                                                         <a href="/CafeGarden/places/place/' . $place['Place']['id'] . '"><h3>' . $place['Place']['name'] . '</h3></a>
                                                         <p class="address">' . $address . '</p>
 							<p class="decription">
-                                                            ' . substr(trim($place['Place']['intro']), 0, 300) . '...
+                                                            ' . $intro . '...
 							</p>
                                                     </div>
-                                                    <div class="rating col-md-2">
+                                                    <div class="rating col-md-2 col-xs-12">
 							<span class="point">' . $place['Place']['vote'] . '.0</span>
 							<ul>
                                                         <li><span>' . $place['Place']['numlike'] . '</span> lượt thích</li>
 							<li><span>' . $place['Place']['view'] . '</span> lượt xem</li>
-							<li><span>0</span> món phục vụ</li>
 							</ul>
                                                     </div>
 				    	</div>';
                                     echo $xhtml;
                                 }
                                 ?>
-                                                                
+
                             </div>
                             <div id="xemthemmap" style="display: none;">
                                 <button id="bt_xem_them_map" class="btn btn-sm">Xem thêm</button>
                             </div>
-                            
+
                             <div id="loading">
                                 Đang tải dữ liệu...
                             </div>              

@@ -67,7 +67,6 @@ function handlerDataSearch(data) {
                     '<ul>' +
                     '<li><span>' + place[x][y].numlike + '</span> lượt thích</li>' +
                     '<li><span>' + place[x][y].view + '</span> lượt xem</li>' +
-                    '<li><span>0</span> món phục vụ</li>' +
                     '</ul>' +
                     '</div>' +
                     '</div>';
@@ -140,8 +139,8 @@ $(function() {
     dist = " "; //Lưu tên của quận cần tìm kiếm
     a = " "; //Lưu tên quán cần tìm kiếm
     orderby = "id asc"; //Lưu tùy chọn sắp xếp quán mặc định là tăng dần về id
-    limit = 3; //Lưu số quán được hiển thị ra ngoài
-    
+    limit = 10; //Lưu số quán được hiển thị ra ngoài
+
     //Bắt sự kiện khi người dùng nhả nút bàn phím để lấy thông tin gợi ý
     $("#dis_text").keyup(function() {
         var content = $(this).val();
@@ -165,8 +164,13 @@ $(function() {
         //Các thẻ checkbox được lựa chọn
         $("input[type='checkbox']").change(function() {
 
-            //Đặt lại biến trạng thái $status
-            $status = true;
+            //Đặt lại biến trạng thái $status nếu cờ flag_map la false
+            if (flag_map == true) {
+                $status = false;
+            }
+            else {
+                $status = true;
+            }
 
             ser = "";
             pur = "";
@@ -181,7 +185,7 @@ $(function() {
             });
 
             //Xóa nội dung các quán trước đó
-            $(".show_more_place").empty();          
+            $(".show_more_place").empty();
         }).trigger('change');
 
         //Thẻ option select được lựa chọn trong tỉnh thành
@@ -202,13 +206,13 @@ $(function() {
                             if (data) {
                                 //Xử lý dữ liệu lấy về
                                 handlerDataProvince(data);
-                            }else {
+                            } else {
                                 $(window).off('change');
                             }
                         }
                     });
                 }
-                
+
             }).trigger('change');
         });
 
@@ -232,16 +236,16 @@ $(function() {
     //Bắt sự kiện người dùng nhấn vào button xem them danh sách
     $("#search_list").click(function() {
         //Đặt lại giới hạn số quán hiển thị ra
-        limit = 3;
+        limit = 10;
         //Đặt lại cờ flag_map
         flag_map = false;
 
         //Làm rỗng khu vực chèn map
         $("#google_canvas").empty();
-        
+
         //Ẩn nút xem thêm kết quả của map
         $("#xemthemmap").hide();
-        
+
         //Bật hiệu ứng scroll
         $status = true;
 

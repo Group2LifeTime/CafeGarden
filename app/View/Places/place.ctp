@@ -40,9 +40,9 @@ foreach ($pur as $value) {
                 $("#count_comment").html(curr);
             }
         });
-        
+
         //Khi người dùng bình chọn thích => tăng lượt like
-        $("#like_page").click(function(){
+        $("#like_page").click(function() {
             var places_id = <?php echo $place['Place']['id'] ?>;
             $.ajax({
                 type: 'POST',
@@ -51,6 +51,11 @@ foreach ($pur as $value) {
                     places_id: places_id
                 }
             });
+        });
+
+        //Đóng map view
+        $("#close_map").click(function() {
+            $("#direction_map").slideUp(3000);
         });
     });
 
@@ -75,6 +80,116 @@ foreach ($pur as $value) {
         js.src = "https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v2.0";
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
+
+    //Hiển thị thông tin chỉ đường cho người dùng
+    function onShowMapDirection() {
+        var map;
+        var directionsDisplay;
+        var directionsService;
+        var stepDisplay;
+        var markerArray = [];
+        var currentPosition;
+        var placePosition;
+        var current;
+        var place;
+        
+        //Làm rỗng vùng hiển thị
+        $("#details_map").empty();
+        $("#details_panel").empty();
+        //Hiển thị map
+        $("#direction_map").slideDown(3000);
+        map = new google.maps.Map(document.getElementById('details_map'), {
+            zoom: 8,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+
+        //Lấy vị trí hiện tại của người dùng
+        navigator.geolocation.getCurrentPosition(function(position) {
+            currentPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            placePosition = new google.maps.LatLng(<?php echo $place['Place']['latitude']; ?>, <?php echo $place['Place']['longitude']; ?>);
+            map.setCenter(currentPosition);
+
+            //Gửi thông tin lên server lấy thông tin về địa chỉ đó
+            $.ajax({
+                type: 'POST',
+                url: "../get_address",
+                data: {
+                    latCurr: position.coords.latitude,
+                    lgnCurr: position.coords.longitude,
+                    latPlace:<?php echo $place['Place']['latitude']; ?>,
+                    lgnPlace: <?php echo $place['Place']['longitude']; ?>
+                },
+                dataType: 'json',
+                success: function(data, textStatus, jqXHR) {
+                    if (data) {
+                        current = data[0].addressCurr;
+                        place = data[1].addressPlace;
+
+                        // Tạo đối tượng tham chiếu tới map
+                        var rendererOptions = {
+                            map: map
+                        }
+                        directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions)
+                        directionsDisplay.setPanel(document.getElementById('details_panel'));
+                        // Đặt thông tin trên từng bước
+                        stepDisplay = new google.maps.InfoWindow();
+                        
+                        //Kiểm tra kiểu di chuyển của người dùng lựa chọn
+                        var type = $("#type").val();
+                        var request;
+                        if(type==2){
+                            request = {
+                            origin: current,
+                            destination: place,
+                            travelMode: google.maps.TravelMode.BICYCLING
+                            };
+                        }else if(type==3){
+                            request = {
+                            origin: current,
+                            destination: place,
+                            travelMode: google.maps.TravelMode.DRIVING
+                            };
+                        }else{
+                            request = {
+                            origin: current,
+                            destination: place,
+                            travelMode: google.maps.TravelMode.WALKING
+                            };
+                        }
+                        directionsService = new google.maps.DirectionsService();
+                        directionsService.route(request, function(response, status) {
+                            if (status == google.maps.DirectionsStatus.OK) {
+                                directionsDisplay.setDirections(response);
+                                showSteps(response);
+                            }
+                        });
+
+                        function showSteps(directionResult) {
+                            var myRoute = directionResult.routes[0].legs[0];
+
+                            for (var i = 0; i < myRoute.steps.length; i++) {
+                                var marker = new google.maps.Marker({
+                                    position: myRoute.steps[i].start_location,
+                                    map: map
+                                });
+                                attachInstructionText(marker, myRoute.steps[i].instructions);
+                                markerArray[i] = marker;
+                            }
+                        }
+                        function attachInstructionText(marker, text) {
+                            google.maps.event.addListener(marker, 'click', function() {
+                                stepDisplay.setContent(text);
+                                stepDisplay.open(map, marker);
+                            });
+                        }
+                    }
+                }
+                
+            });
+        });
+
+    }
+
 </script>
 
 
@@ -86,16 +201,39 @@ foreach ($pur as $value) {
 
         <div id="nav" class="col-md-12">
             <ul class="nav nav-pills">
-                <li class="active"><a href="#">Trang chủ</a></li>
-                <li><a href="#">Sự kiện</a></li>
-                <li><a href="#">Video</a></li>
-                <li><a href="#">Map</a></li>
-                <li><a href="#">Thực đơn</a></li>
+                <li class="active"><a href="/CafeGarden/places/index">Trang chủ</a></li>
+                <li><a href="#" onclick="onShowMapDirection()">Map</a></li>
             </ul>
         </div>
     </div><!-- End .header -->
 
+    <!-- Hiển thị bản đồ chỉ đường cho người ở vị trí hiện tại-->
+    <div id="direction_map" class="container-fluid wrap-item" style="display: none" >
+        <div id="details_map" class="col-md-8" style="height: 500px;">
 
+        </div>
+
+        <div id="details_panel" class="col-md-4" style="height: 500px; overflow: auto">
+
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                Chọn phương tiện: 
+                <select id="type" onchange="onShowMapDirection();">
+                    <option value="1">Đi bộ</option>
+                    <option value="2">Đi xe đạp</option>
+                    <option value="3">Đi xe máy</option>
+                </select>
+                <button id="close_map" class="btn-sm">Đóng</button>
+            </div>
+            <div class="col-md-4">
+
+            </div>
+        </div>
+    </div>
+
+
+    <!--//////////////////////////////////////////////-->
     <div id="side" class="container-fluid wrap-item">
         <div id="side-img" class="col-md-8">
             <!-- Start WOWSlider.com -->

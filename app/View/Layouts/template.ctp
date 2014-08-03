@@ -6,8 +6,7 @@
         <title><?php echo $title_for_layout ?></title>
 
         <!--Thêm hiển thị map-->
-        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
-        <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>  
+        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
         <script>
             
             function smallMap() {

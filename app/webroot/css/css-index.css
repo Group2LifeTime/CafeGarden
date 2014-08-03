@@ -287,3 +287,19 @@ div#place div.panel div.panel-body{
 #add_comment{
     text-align: right;
 }
+
+#close_map{
+    padding: 0.2em;
+    color: white;
+    margin: 3px;
+}
+#close_map{
+    background-color:#805149; 
+}
+#close_map:hover{
+    background-color:rgba(128, 81, 73,0.7); 
+}
+
+#type{
+    color: black;
+}

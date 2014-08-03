@@ -119,7 +119,9 @@ function handlerDataReceivMap(data) {
                 if (distance < radius) {
                     marker = new google.maps.Marker({
                         position: new google.maps.LatLng(locations[x][y].latitude, locations[x][y].longitude),
+                        animation: google.maps.Animation.DROP,
                         icon: image,
+                        title: locations[x][y].name,
                         map: map
                     });
                 }

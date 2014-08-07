@@ -62,13 +62,20 @@ foreach ($pur as $value) {
 </script>
 <script>
 
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId: '259464497577015',
+            xfbml: true,
+            version: 'v2.0'
+        });
+    };
     (function(d, s, id) {
         var js, fjs = d.getElementsByTagName(s)[0];
         if (d.getElementById(id))
             return;
         js = d.createElement(s);
         js.id = id;
-        js.src = "https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&appId=259464497577015&version=v2.0";
+        js.src = "https://connect.facebook.net/vi_VN/all.js";
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
 
@@ -83,7 +90,7 @@ foreach ($pur as $value) {
         var placePosition;
         var current;
         var place;
-        
+
         //Làm rỗng vùng hiển thị
         $("#details_map").empty();
         $("#details_panel").empty();
@@ -124,27 +131,27 @@ foreach ($pur as $value) {
                         directionsDisplay.setPanel(document.getElementById('details_panel'));
                         // Đặt thông tin trên từng bước
                         stepDisplay = new google.maps.InfoWindow();
-                        
+
                         //Kiểm tra kiểu di chuyển của người dùng lựa chọn
                         var type = $("#type").val();
                         var request;
-                        if(type==2){
+                        if (type == 2) {
                             request = {
-                            origin: current,
-                            destination: place,
-                            travelMode: google.maps.TravelMode.TRANSIT
+                                origin: current,
+                                destination: place,
+                                travelMode: google.maps.TravelMode.TRANSIT
                             };
-                        }else if(type==3){
+                        } else if (type == 3) {
                             request = {
-                            origin: current,
-                            destination: place,
-                            travelMode: google.maps.TravelMode.DRIVING
+                                origin: current,
+                                destination: place,
+                                travelMode: google.maps.TravelMode.DRIVING
                             };
-                        }else{
+                        } else {
                             request = {
-                            origin: current,
-                            destination: place,
-                            travelMode: google.maps.TravelMode.WALKING
+                                origin: current,
+                                destination: place,
+                                travelMode: google.maps.TravelMode.WALKING
                             };
                         }
                         directionsService = new google.maps.DirectionsService();
@@ -175,7 +182,7 @@ foreach ($pur as $value) {
                         }
                     }
                 }
-                
+
             });
         });
 
@@ -189,7 +196,7 @@ foreach ($pur as $value) {
 
         <h1 class="title "><?php echo $place['Place']['name']; ?></h1>
         <p><?php echo $this->Address->createAddress($place); ?></p>
-       
+
         <div id="nav" class="col-md-12">
             <ul class="nav nav-pills">
                 <li class="active"><a href="/CafeGarden/places/index">Trang chủ</a></li>
@@ -233,7 +240,7 @@ foreach ($pur as $value) {
         </div>
         <div id="event" class="col-md-4 wrap-item">
             <div id="like_face" class="row">
-                <div id="like_page" class="fb-like" data-href="http://www.quancafe.vn/" data-layout="standard" data-action="like" data-show-faces="true" data-share="true" width="300px"></div>
+                <div id="like_page" class="fb-like" data-href="<?php echo $_SERVER["REQUEST_URI"] ?>" data-layout="standard" data-action="like" data-show-faces="true" data-share="true" width="300px"></div>
             </div>
 
             <h4>Sự kiện</h4>

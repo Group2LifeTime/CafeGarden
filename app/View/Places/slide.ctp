@@ -10,7 +10,7 @@
         <!-- <link rel="stylesheet" type="text/css" href="engine1/style.css" /> -->
         <?php echo $this->Html->css("engine1/style"); ?> 
 
-        <script type="text/javascript" src="engine1/jquery.js"></script>
+        <!--<script type="text/javascript" src="engine1/jquery.js"></script>-->
         <?php echo $this->Html->script("engine1/jquery"); ?> 
 
         <!-- End WOWSlider.com HEAD section -->

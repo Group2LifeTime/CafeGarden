@@ -303,3 +303,11 @@ div#place div.panel div.panel-body{
 #type{
     color: black;
 }
+
+
+#list_comment li{
+	border-bottom: 2px solid white;
+	border-top: 0;
+	border-left: 0;
+	border-right: 0;
+}

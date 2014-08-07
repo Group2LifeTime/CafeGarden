@@ -61,15 +61,6 @@ foreach ($pur as $value) {
 
 </script>
 <script>
-    window.fbAsyncInit = function() {
-        FB.init({
-            appId: '259464497577015',
-            xfbml: true,
-            status: true,
-            version: 'v2.0'
-        });
-    };
-
 
     (function(d, s, id) {
         var js, fjs = d.getElementsByTagName(s)[0];
@@ -77,7 +68,7 @@ foreach ($pur as $value) {
             return;
         js = d.createElement(s);
         js.id = id;
-        js.src = "https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v2.0";
+        js.src = "https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&appId=259464497577015&version=v2.0";
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
 
@@ -141,7 +132,7 @@ foreach ($pur as $value) {
                             request = {
                             origin: current,
                             destination: place,
-                            travelMode: google.maps.TravelMode.BICYCLING
+                            travelMode: google.maps.TravelMode.TRANSIT
                             };
                         }else if(type==3){
                             request = {
@@ -198,7 +189,7 @@ foreach ($pur as $value) {
 
         <h1 class="title "><?php echo $place['Place']['name']; ?></h1>
         <p><?php echo $this->Address->createAddress($place); ?></p>
-
+       
         <div id="nav" class="col-md-12">
             <ul class="nav nav-pills">
                 <li class="active"><a href="/CafeGarden/places/index">Trang chủ</a></li>
@@ -221,7 +212,7 @@ foreach ($pur as $value) {
                 Chọn phương tiện: 
                 <select id="type" onchange="onShowMapDirection();">
                     <option value="1">Đi bộ</option>
-                    <option value="2">Đi xe đạp</option>
+                    <option value="2">Đi xe bus</option>
                     <option value="3">Đi xe máy</option>
                 </select>
                 <button id="close_map" class="btn-sm">Đóng</button>
@@ -242,7 +233,7 @@ foreach ($pur as $value) {
         </div>
         <div id="event" class="col-md-4 wrap-item">
             <div id="like_face" class="row">
-                <div id="like_page" class="fb-like" data-href="http://localhost/CafeGarden/places/place/<?php echo $place['Place']['id'] ?>" data-layout="standard" data-action="like" data-show-faces="true" data-share="true" width="300px"></div>
+                <div id="like_page" class="fb-like" data-href="http://www.quancafe.vn/" data-layout="standard" data-action="like" data-show-faces="true" data-share="true" width="300px"></div>
             </div>
 
             <h4>Sự kiện</h4>

@@ -163,12 +163,13 @@ label.css-label{
     margin-left: 10px;
 }
 /******************STYLE FOOTER**********************/
-div#footer {
-    background-image: url(../images/bg-footer.jpg);
+#footer {
+    /*background-image: url(../images/bg-footer.jpg);*/
+    background-color: #4d5259;
     min-height: 300px;
     color: white;
 }
 
-div#footer{
+#footer{
     margin-top: 20px;
 }
